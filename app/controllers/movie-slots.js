@@ -79,12 +79,9 @@ module.exports = class MovieSlotScheduleController {
 
     }
 
-    static getMovieScheduleByDate(movieId, date){
-        date = new Date(date.date)
-        if(!date){
-            date = new Date()
-        }
-        return MovieSlots.find({"movie.id": movieId, "screen_date_schedules.date": {$eq: date}} )
+    static getMovieScheduleByDate(movieId, onDate){
+        let date = new Date(onDate)
+        return MovieSlots.find({"movie.id": movieId, "screen_date_schedules.date": date} )
     }
 
 

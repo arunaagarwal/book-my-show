@@ -25,7 +25,7 @@ router.get('/movie-slots/:id', (req, res, next) => {
 });
 
 router.get('/movie-slots/movie/:id', (req, res, next) => {
-    MovieSlotScheduleController.getMovieScheduleByDate(req.params.id, req.query)
+    MovieSlotScheduleController.getMovieScheduleByDate(req.params.id, req.query.date)
         .then(function (result) {
             return res.send({success: true, data: result});
         }).catch(next)
