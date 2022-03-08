@@ -5,16 +5,22 @@ const CinemaHalls = require('../models/cinema-halls');
 const {ObjectId} = require('mongodb');
 
 module.exports = class MovieSlotScheduleController {
+    //In this api we need to first check 2 movies should not coincide with the same time and date on same screen.
     static async create(document) {
         let cinemaHall = {}
         let seats_info = []
+        let movieExist = await MovieSlots.findOne({time: document.time, "screen_date_schedules.id":  document.screen_date_schedules.id})
+        if(movieExist){
+            throw Error('Movie already exist at this time. Kindly choose some other time interval');
+        }
+
         if (document.cinema_hall && document.cinema_hall.id) {
             cinemaHall = await CinemaHalls.findOne({_id: ObjectId(document.cinema_hall.id)}).lean()
         }
         let stats = cinemaHall.seat_stats;
         let seat_type = cinemaHall.seat_type;
-        let status = []
         for (let i = 0; i < stats.number_of_rows; i++) {
+            let status = []
             for (let j = 0; j < stats.rows_info[i].total_seats; j++) {
                 status.push({
                     seat_type: stats.rows_info[i].row_type,
@@ -43,10 +49,10 @@ module.exports = class MovieSlotScheduleController {
         movieSlot.total_seat_available = movieSlot.total_seat - movieSlot.total_seats_booked
         //surge price
         let seats_info = []
-        let status = []
         let surge_price_multiplier = MovieSlotScheduleController.getSurgePrice(movieSlot.total_seat_available, movieSlot.total_seat);
         if (surge_price_multiplier != 1) {
             for (let i = 0; i < movieSlot.seats_info.length; i++) {
+                let status = []
                 for (let j = 0; j < movieSlot.seats_info[i].status.length; j++) {
                     let seatInfo = movieSlot.seats_info[i].status[j]
                     status.push({

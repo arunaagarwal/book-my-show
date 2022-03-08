@@ -7,7 +7,7 @@ router.post('/auth/login', (req, res, next) => {
     AuthController.login(req.body)
         .then(function (result) {
             return res.send({success: true, data: result});
-        }).catch(next)
+        }).catch(err => res.status(401).send({"error": "Please enter correct credentials"}))
 });
 
 router.get('/auth/otp/verify', (req, res, next) => {

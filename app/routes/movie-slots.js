@@ -7,7 +7,7 @@ router.post('/movie-slots', (req, res, next) => {
     MovieSlotScheduleController.create(req.body)
         .then(function (result) {
             return res.send({success: true, data: result});
-        }).catch(next)
+        }).catch(err=> res.status(401).send({success: false, error: 'Movie already exist at this time. Kindly choose some other time interval'}))
 });
 
 router.get('/movie-slots', (req, res, next) => {

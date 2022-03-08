@@ -5,7 +5,8 @@ const MovieSlots = require('../models/movie-slots');
 const { ObjectId } = require('mongodb');
 
 module.exports = class CinemaHallController{
-    static async create(document){
+    static async create(document) {
+        document.total_seats = document.seat_stats.rows_info.reduce((acc, row) => acc + row.total_seats, 0)
         return new CinemaHalls(document).save()
     }
     static get(){
@@ -17,6 +18,7 @@ module.exports = class CinemaHallController{
     }
 
     static async update(id, document){
+        document.total_seats = document.seat_stats.rows_info.reduce((acc, row) => acc + row.total_seats, 0);
         let cinemaHall = await CinemaHalls.findOneAndUpdate({_id: id},document, {new: true});
         let seats_info = []
         let stats = cinemaHall.seat_stats;
@@ -36,6 +38,7 @@ module.exports = class CinemaHallController{
                 status: status
             })
         }
-        MovieSlots.updateMany({_id: cinemaHall.id}, {seats_info: seats_info, total_seat: cinemaHall.total_seats}, {new: true})
+        await MovieSlots.updateMany({"cinema_hall.id": cinemaHall.id}, {seats_info: seats_info, total_seat: cinemaHall.total_seats}, {new: true})
+        return cinemaHall
     }
 }

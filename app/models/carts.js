@@ -6,29 +6,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ordersSchema = mongoose.Schema({
+const cartsSchema = mongoose.Schema({
     user: {
-        id: {type: Schema.Types.ObjectId, ref: 'users'}
+        id: {type: Schema.Types.ObjectId, ref: 'users'},
+        email: String,
+        phone_number: String
     },
-    reference_code: String, //Unique to identify orders
-    total_tickets_price: {type: Number, default: 0},
-    total_food_price: {type: Number, default: 0},
-    total_paid: {type: Number, default: 0}, //including tickets, food etc
-    total_discount: {type: Number, default: 0},
-    total_price_after_discount: {type: Number, default: 0},
     voucher: {
-        id: {type: Schema.Types.ObjectId, ref: "vouchers"},
-        code: String,
-        discount_type: {type: String, enum: ['amount', 'percentage']},
-        discount_info: {
-            amount: Number,
-            percentage: Number
-        },
-        voucher_type: {type: String},
+        id: {type: Schema.Types.ObjectId, ref: 'vouchers'},
+        code: String
     },
-    total_seats_booked: Number,
-    total_seats: Number,
-    cart_id: {type: Schema.Types.ObjectId, ref: "carts"},
+    voucher_amount: {type: Number, default: 0},
     booking_info: {
         cinema_hall: {
             id: {type: Schema.Types.ObjectId, ref: "cinema_halls"},
@@ -66,6 +54,7 @@ const ordersSchema = mongoose.Schema({
             price: Number
         }]
     },
+    status: {type: String, enum: ['ordered', 'abandoned', 'active', 'payment_failed', 'order_failed']},
     is_deleted: {type: Boolean, default: false}
 }, {
     timestamps: {
@@ -73,7 +62,6 @@ const ordersSchema = mongoose.Schema({
         updatedAt: 'updated_at',
     }
 })
+const carts = mongoose.model('carts', cartsSchema);
 
-const orders = mongoose.model('orders', ordersSchema);
-
-module.exports = orders;
+module.exports = carts;

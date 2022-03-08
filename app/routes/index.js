@@ -9,5 +9,6 @@ module.exports = [
     require("./movie-slots"),
     require("./orders"),
     require("./auth"),
-    require("./food-menus")
+    require("./food-menus"),
+    require("./carts")
 ];
